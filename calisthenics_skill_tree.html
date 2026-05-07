@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My skill tree</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
+:root {
+  --green:       #76A900;
+  --green-light: #EEF5D0;
+  --green-mid:   #BFDF6E;
+  --green-dark:  #4A6A00;
+  --green-deep:  #2E4200;
+  --amber:       #F5A623;
+  --amber-light: #FEF3DC;
+  --brown:       #6B2D1E;
+  --grey-skill:  #7A7A6E;
+  --purple:      #C8C0E8;
+  --purple-dark: #5C4D8A;
+  --pink:        #F0C8C8;
+  --pink-dark:   #A83050;
+  --bg:          #F0EEE8;
+  --surface:     #FFFFFF;
+  --surface-2:   #EDEAE3;
+  --text-1:      #1A1A18;
+  --text-2:      #6B6960;
+  --text-3:      #A8A59E;
+  --border:      rgba(0,0,0,0.09);
+  --r-sm:  12px;
+  --r-lg:  22px;
+  --r-xl:  28px;
+  --font: 'DM Sans', -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); font-family: var(--font); color: var(--text-1); min-height: 100vh; overflow-x: hidden; }
+
+/* ── Page system ── */
+.page { display: none; min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 48px; animation: fadeUp 0.22s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ══════════════════════════════
+   SKILL TREE PAGE
+══════════════════════════════ */
+.tree-header {
+  padding: 56px 24px 20px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: relative;
+}
+.tree-back-btn {
+  position: absolute; left: 20px; top: 52px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  border: none; cursor: pointer; font-size: 20px; font-family: var(--font);
+  display: flex; align-items: center; justify-content: center;
+}
+.tree-back-btn:active { transform: scale(0.93); }
+.tree-big-icon { width: 72px; height: 72px; }
+.tree-title { font-size: 22px; font-weight: 700; }
+
+.tree-body { padding: 0 16px; display: flex; flex-direction: column; }
+
+.v-line { width: 3px; height: 18px; background: var(--border); margin: 0 auto; transition: background 0.4s; }
+.v-line.lit { background: var(--green-mid); }
+
+/* chest on tree page */
+.chest-row {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 15px 16px; display: flex; align-items: center; gap: 13px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid transparent;
+  transition: border-color 0.4s;
+}
+.chest-row.unlocked { border-color: var(--amber); }
+.chest-icon-box {
+  width: 46px; height: 46px; border-radius: var(--r-sm);
+  background: var(--amber-light); display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.chest-info .chest-eye { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 2px; }
+.chest-row.unlocked .chest-eye { color: var(--amber); }
+.chest-info .chest-name { font-size: 16px; font-weight: 700; color: var(--text-1); }
+.chest-row.unlocked .chest-name { color: var(--amber); }
+.chest-info .chest-hint { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+
+/* level summary row on tree page */
+.level-row {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 15px 16px; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border: 2px solid transparent;
+  transition: border-color 0.3s, background 0.3s; user-select: none;
+}
+.level-row:active { transform: scale(0.985); }
+.level-row.current { border-color: var(--green); }
+.level-row.done { border-color: var(--green); background: var(--green-light); }
+.level-row-title { font-size: 16px; font-weight: 700; color: var(--text-1); }
+.level-row.done .level-row-title { color: var(--green-deep); }
+
+.level-dots { display: flex; gap: 8px; }
+.ldot {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--surface-2); display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; border: 2px solid transparent;
+}
+.ldot svg { width: 16px; height: 16px; }
+.ldot.partial  { border-color: var(--amber); background: var(--amber-light); }
+.ldot.c-green  { background: #76A900; border-color: #4A6A00; }
+.ldot.c-brown  { background: #7A3B2E; border-color: #4A1E14; }
+.ldot.c-amber  { background: #F5A623; border-color: #B37518; }
+.ldot.c-grey   { background: #888;    border-color: #555; }
+
+/* ══════════════════════════════
+   LEVEL DETAIL PAGE
+══════════════════════════════ */
+.lvl-header {
+  padding: 52px 20px 16px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.back-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  border: none; cursor: pointer; font-size: 20px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.back-btn:active { transform: scale(0.93); }
+.lvl-header-mid { flex: 1; text-align: center; padding-top: 2px; }
+.lvl-journey-label { font-size: 14px; font-weight: 500; color: var(--text-2); margin-bottom: 2px; }
+.lvl-big-count { font-size: 68px; font-weight: 800; line-height: 1; letter-spacing: -2px; color: var(--text-1); }
+.lvl-big-count .of { color: var(--text-3); font-weight: 600; font-size: 56px; }
+.lvl-sub { font-size: 14px; color: var(--text-2); margin-top: 6px; line-height: 1.45; }
+.lvl-sub strong { color: var(--green-dark); }
+.tree-icon-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  border: none; cursor: pointer; font-size: 26px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.tree-icon-btn:active { transform: scale(0.93); }
+
+.lvl-body { padding: 0 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* chest on level page */
+.lvl-chest {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 15px 16px; display: flex; align-items: center; gap: 13px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid transparent; transition: border-color 0.4s;
+}
+.lvl-chest.unlocked { border-color: var(--amber); }
+
+/* skill level card */
+.skill-card {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 18px 16px 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid transparent; transition: all 0.3s;
+}
+.skill-card.active { border-color: var(--green); }
+.skill-card.done   { border-color: var(--green); background: var(--green-light); }
+.skill-card-title {
+  font-size: 18px; font-weight: 700; margin-bottom: 14px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.skill-card.done .skill-card-title { color: var(--green-deep); border-color: var(--green-mid); }
+
+.ex-row { margin-bottom: 14px; }
+.ex-row:last-child { margin-bottom: 0; }
+.ex-name { font-size: 14px; font-weight: 600; color: var(--text-1); margin-bottom: 2px; }
+.ex-sub  { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.ex-alt  { color: var(--text-3); }
+
+/* ── SESSION BAR ── 3 segments × 3 taps = 9 taps total */
+.sbar {
+  height: 54px; border-radius: 99px; background: var(--surface-2);
+  position: relative; cursor: pointer; overflow: visible;
+  transition: transform 0.15s; user-select: none;
+  display: flex; gap: 4px; padding: 4px;
+}
+.sbar:active { transform: scale(0.99); }
+.sbar.sbar-locked { cursor: not-allowed; opacity: 0.38; pointer-events: none; }
+
+/* Each segment is 1/3 of the bar */
+.seg {
+  flex: 1; border-radius: 99px; background: var(--surface-2);
+  position: relative; overflow: hidden; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid rgba(0,0,0,0.06);
+}
+/* fill inside segment grows left→right */
+.seg-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px;
+  transition: width 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.seg-fill.p0 { width: 0%; }
+.seg-fill.p1 { width: 33.33%; }
+.seg-fill.p2 { width: 66.66%; }
+.seg-fill.p3 { width: 100%; }
+
+/* dot / label on top of fill */
+.seg-dot {
+  position: relative; z-index: 2;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: white; box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.seg.complete .seg-dot { background: rgba(255,255,255,0.92); }
+.seg-dot svg { width: 15px; height: 15px; }
+.seg-count {
+  font-size: 12px; font-weight: 700; line-height: 1;
+}
+/* complete segment: full colour, no border */
+.seg.complete { border-color: transparent; }
+
+
+/* ── TODAY'S LEGS ── */
+.legs-title { font-size: 20px; font-weight: 700; }
+.legs-row { display: flex; gap: 12px; }
+.leg-card {
+  flex: 1; border-radius: var(--r-lg); padding: 16px 14px;
+  min-height: 134px; position: relative; cursor: pointer; user-select: none;
+  transition: transform 0.2s;
+}
+.leg-card:active { transform: scale(0.97); }
+.leg-card.sq { background: var(--purple); }
+.leg-card.lu { background: var(--pink); }
+.leg-card-name { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+.leg-card-desc { font-size: 12px; color: var(--text-2); line-height: 1.4; }
+.leg-card-desc strong { font-weight: 700; color: var(--text-1); }
+.leg-check {
+  position: absolute; bottom: 12px; right: 12px;
+  width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.65);
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.leg-card.checked .leg-check { background: white; box-shadow: 0 1px 5px rgba(0,0,0,0.14); }
+.leg-check svg { width: 14px; height: 14px; opacity: 0.25; transition: opacity 0.2s; }
+.leg-card.checked .leg-check svg { opacity: 1; }
+.leg-card.sq .leg-check svg { stroke: var(--purple-dark); }
+.leg-card.lu .leg-check svg { stroke: var(--pink-dark); }
+</style>
+</head>
+<body>
+
+<!-- ═══════ TREE PAGE ═══════ -->
+<div class="page active" id="page-tree">
+  <div class="tree-header">
+    <button class="tree-back-btn" id="tree-back-btn" onclick="backFromTree()">‹</button>
+    <div class="tree-big-icon" id="tree-big-icon"></div>
+    <div class="tree-title">My skill tree</div>
+  </div>
+  <div class="tree-body" id="tree-body"></div>
+</div>
+
+<!-- ═══════ LEVEL PAGE ═══════ -->
+<div class="page" id="page-level">
+  <div class="lvl-header">
+    <button class="back-btn" onclick="goToTree()">‹</button>
+    <div class="lvl-header-mid">
+      <div class="lvl-journey-label">My journey</div>
+      <div class="lvl-big-count" id="lc-count">0 <span class="of">/ 12</span></div>
+      <div class="lvl-sub" id="lc-sub"></div>
+    </div>
+    <button class="tree-icon-btn" onclick="goToTree()" id="tree-icon-btn"></button>
+  </div>
+  <div class="lvl-body" id="lvl-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONSTANTS & DATA
+// ═══════════════════════════════════════
+const SESSIONS = 9;   // 3 segments × 3 taps
+const TAPS_PER_SEG = 3;
+const SEGS = 3;
+
+// 6 levels: 0.5, 1.0, 1.5, 2.0, 2.5, 3.0
+// Each level: 4 exercises (one per skill), each needing 3 sessions → 12 total per level
+const LEVELS = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0];
+
+const SKILLS = [
+  { id:'lsit',    label:'L-sit',    icon:'🦵', color:'#76A900', colorLight:'#EEF5D0', colorDark:'#4A6A00' },
+  { id:'dips',    label:'Dips',     icon:'🪑', color:'#F5A623', colorLight:'#FEF3DC', colorDark:'#B37518' },
+  { id:'pushups', label:'Push-ups', icon:'👐', color:'#6B2D1E', colorLight:'#F5E8E5', colorDark:'#3D1208' },
+  { id:'pullups', label:'Pull-ups', icon:'🏋️', color:'#7A7A6E', colorLight:'#EDEAE3', colorDark:'#46463D' },
+];
+
+// One exercise per skill per level
+// level 0.5 = first exercise of old level 1, level 1.0 = second exercise of old level 1, etc.
+const EXERCISES = {
+  //        0.5                                    1.0
+  lsit: [
+    { label:'Lying leg raises',         sub:'3×10 reps' },
+    { label:'Seated leg raises',        sub:'3×10, hands on floor', alt:'or: V-ups, 3×8' },
+    { label:'Tuck L-sit hold',          sub:'3×5 sec, both knees up' },
+    { label:'Single-leg extension',     sub:'3×5 sec each leg', alt:'or: Hollow body hold, 3×15 sec' },
+    { label:'L-sit hold',               sub:'3×8 sec, legs straight' },
+    { label:'L-sit hold',               sub:'3×12 sec, legs straight' },
+  ],
+  dips: [
+    { label:'Chair dips',               sub:'3×8, bent knees' },
+    { label:'Chair dips',               sub:'3×12, full depth', alt:'or: Bench dips, feet elevated' },
+    { label:'Negative dips',            sub:'3×5, 4 sec descent' },
+    { label:'Assisted bar dips',        sub:'3×6, band support' },
+    { label:'Bar dips',                 sub:'3×3, unassisted' },
+    { label:'Bar dips',                 sub:'3×6, unassisted', alt:'or: Ring push-ups, 3×8' },
+  ],
+  pushups: [
+    { label:'Wall push-ups',            sub:'3×12 reps' },
+    { label:'Incline push-ups',         sub:'3×10, hands elevated', alt:'or: Hands on dip bar, 3×10' },
+    { label:'Knee push-ups',            sub:'3×8, full depth' },
+    { label:'Knee push-ups',            sub:'3×12, slow 3 sec down' },
+    { label:'Full push-ups',            sub:'3×4 reps', alt:'or: Wide-grip push-ups, 3×4' },
+    { label:'Full push-ups',            sub:'3×7 reps' },
+  ],
+  pullups: [
+    { label:'Aus. pull-ups (dip bar)',   sub:'3×6, bent legs' },
+    { label:'Aus. pull-ups (straight)', sub:'3×8, horizontal', alt:'or: Inverted row, 3×8' },
+    { label:'Dead hang',                sub:'3×15 sec, full grip' },
+    { label:'Band-assisted pull-up',    sub:'3×5, resistance band', alt:'or: Scapula pulls, 3×8' },
+    { label:'Negative pull-ups',        sub:'3×4, 5 sec descent' },
+    { label:'Full pull-ups',            sub:'3×1–2, unassisted' },
+  ],
+};
+
+// Chests unlock after 1.0, 2.0, 3.0
+const CHEST_AT = {
+  1.0: { reward:'Pull-up bar',  hint:'Essential for level 2 pull-up work' },
+  2.0: { reward:'Parallettes',  hint:'Better L-sit & dip depth' },
+  3.0: { reward:'Running gear', hint:"Full kit — you've earned it" },
+};
+
+const SQUATS = [
+  { id:'sq1', label:'Bodyweight squats', desc:'<strong>3×12</strong> feet shoulder-width apart' },
+  { id:'sq2', label:'Squat hold',        desc:'<strong>3×20 sec</strong> deep position' },
+  { id:'sq3', label:'Slow squats',       desc:'<strong>3×10</strong> 3 sec down, 1 sec hold' },
+  { id:'sq4', label:'Pulse squats',      desc:'<strong>3×15</strong> pulses at bottom' },
+];
+const LUNGES = [
+  { id:'lu1', label:'Stationary lunges', desc:'<strong>3×8</strong> each leg' },
+  { id:'lu2', label:'Walking lunges',    desc:'<strong>3×10</strong> steps each side' },
+  { id:'lu3', label:'Reverse lunges',    desc:'<strong>3×8</strong> each leg' },
+  { id:'lu4', label:'Lateral lunges',    desc:'<strong>3×8</strong> each side' },
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const state = (() => { try { return JSON.parse(localStorage.getItem('cali_v13') || '{}'); } catch(e) { return {}; } })();
+function save() { try { localStorage.setItem('cali_v13', JSON.stringify(state)); } catch(e) {} }
+
+// key: sid_levelIndex (0-5)_skillIndex (0-3)
+function eKey(lvlIdx, skillIdx) { return `e_${lvlIdx}_${skillIdx}`; }
+function getSess(lvlIdx, skillIdx) { return state[eKey(lvlIdx, skillIdx)] || 0; }
+function isExDone(lvlIdx, skillIdx) { return getSess(lvlIdx, skillIdx) >= SESSIONS; }
+
+// How many complete segments (0-3) for a given exercise
+function segsComplete(lvlIdx, si) { return Math.floor(getSess(lvlIdx, si) / TAPS_PER_SEG); }
+// Taps within current in-progress segment (0-2)
+function tapsInSeg(lvlIdx, si) { return getSess(lvlIdx, si) % TAPS_PER_SEG; }
+
+function levelDone(lvlIdx) {
+  return SKILLS.every((_, si) => isExDone(lvlIdx, si));
+}
+
+// Current level = lowest incomplete level index
+function currentLvlIdx() {
+  for (let i = 0; i < LEVELS.length; i++) { if (!levelDone(i)) return i; }
+  return LEVELS.length - 1;
+}
+
+function levelProgress(lvlIdx) {
+  let done = 0;
+  SKILLS.forEach((_, si) => { done += Math.min(getSess(lvlIdx, si), SESSIONS); });
+  return { done, total: SKILLS.length * SESSIONS }; // 36
+}
+
+// Today's legs — random once per calendar day
+function getTodayLegs() {
+  const today = new Date().toDateString();
+  if (state._leg_date !== today) {
+    state._leg_date = today;
+    state._leg_sq = SQUATS[Math.floor(Math.random() * SQUATS.length)].id;
+    state._leg_lu = LUNGES[Math.floor(Math.random() * LUNGES.length)].id;
+    save();
+  }
+  return {
+    sq: SQUATS.find(s => s.id === state._leg_sq) || SQUATS[0],
+    lu: LUNGES.find(l => l.id === state._leg_lu) || LUNGES[0],
+  };
+}
+
+// ═══════════════════════════════════════
+// ICONS / SVG
+// ═══════════════════════════════════════
+const CHECK_W = `<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECK_G = `<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="#4A6A00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function checkColored(color) { return `<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+
+const TREE_SVG = `<svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="20" rx="22" ry="20" fill="#76A900"/>
+  <ellipse cx="22" cy="28" rx="16" ry="15" fill="#76A900"/>
+  <ellipse cx="58" cy="28" rx="16" ry="15" fill="#76A900"/>
+  <ellipse cx="40" cy="38" rx="24" ry="20" fill="#76A900"/>
+  <rect x="33" y="54" width="14" height="28" rx="4" fill="#4A6A00"/>
+</svg>`;
+
+const CHEST_SVG = `<svg viewBox="0 0 56 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="22" width="52" height="24" rx="5" fill="#F5A623"/>
+  <rect x="2" y="22" width="52" height="9" fill="#D4880A"/>
+  <rect x="21" y="20" width="14" height="8" rx="3" fill="#1A1A18" stroke="#1A1A18" stroke-width="1"/>
+  <rect x="24" y="23" width="8" height="4" rx="2" fill="#F5A623"/>
+  <rect x="2" y="6" width="52" height="18" rx="5" fill="#F5C842"/>
+  <rect x="2" y="20" width="52" height="4" rx="0" fill="#D4880A"/>
+  <rect x="19" y="3" width="18" height="7" rx="3" fill="#1A1A18"/>
+  <rect x="22" y="5" width="12" height="4" rx="2" fill="#F5C842"/>
+</svg>`;
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+let activeLvlIdx = null; // which level page is open
+
+function goToLevel(lvlIdx) {
+  activeLvlIdx = lvlIdx;
+  renderLevelPage(lvlIdx);
+  document.getElementById('page-tree').classList.remove('active');
+  document.getElementById('page-level').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goToTree() {
+  renderTreePage();
+  document.getElementById('page-level').classList.remove('active');
+  document.getElementById('page-tree').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function backFromTree() {
+  // ‹ on tree page → go back to whatever level page was open (or current level)
+  const target = activeLvlIdx !== null ? activeLvlIdx : currentLvlIdx();
+  goToLevel(target);
+}
+
+// ═══════════════════════════════════════
+// TREE PAGE
+// ═══════════════════════════════════════
+function renderTreePage() {
+  // Show back arrow only if a level page has been visited
+  const backBtn = document.getElementById('tree-back-btn');
+  backBtn.style.display = activeLvlIdx !== null ? 'flex' : 'none';
+
+  const body = document.getElementById('tree-body');
+  body.innerHTML = '';
+  const reversedLevels = [...LEVELS].reverse();
+
+  reversedLevels.forEach((lvl, ri) => {
+    const lvlIdx = LEVELS.indexOf(lvl);
+    const done = levelDone(lvlIdx);
+    const cur = currentLvlIdx();
+    const isCurrent = lvlIdx === cur && !done;
+
+    // Chest before this level (only at 3.0, 2.0, 1.0)
+    if (CHEST_AT[lvl]) {
+      const chest = CHEST_AT[lvl];
+      // Chest unlocks when the PREVIOUS full level is done
+      // e.g. chest at 3.0 unlocks when 2.0 is done
+      const prevFullIdx = LEVELS.indexOf(lvl) - 1; // the level just before this
+      const chestUnlocked = prevFullIdx >= 0 ? levelDone(prevFullIdx) : false;
+
+      const cc = document.createElement('div');
+      cc.className = 'chest-row' + (chestUnlocked ? ' unlocked' : '');
+      cc.innerHTML = `
+        <div class="chest-icon-box">${CHEST_SVG}</div>
+        <div class="chest-info">
+          <div class="chest-eye">Level ${lvl.toFixed(1).replace('.0','').replace('.5','')} reward</div>
+          <div class="chest-name">${chestUnlocked ? 'Unlocked – ' + chest.reward : chest.reward}</div>
+          <div class="chest-hint">${chestUnlocked ? chest.hint : 'Locked – Complete all level ' + (lvl-1) + ' nodes to unlock'}</div>
+        </div>`;
+      body.appendChild(cc);
+
+      const line = document.createElement('div');
+      line.className = 'v-line' + (chestUnlocked ? ' lit' : '');
+      body.appendChild(line);
+    }
+
+    // Level row
+    const dotsHTML = SKILLS.map((sk, si) => {
+      const d = isExDone(lvlIdx, si);
+      const any = getSess(lvlIdx, si) > 0;
+      const style = d ? `style="background:${sk.color};border-color:${sk.colorDark}"` : any ? `style="border-color:${sk.color};background:${sk.colorLight}"` : '';
+      return `<div class="ldot" ${style}>${d ? CHECK_W : ''}</div>`;
+    }).join('');
+
+    const lr = document.createElement('div');
+    lr.className = 'level-row' + (done ? ' done' : '') + (isCurrent ? ' current' : '');
+    lr.innerHTML = `<div class="level-row-title">Skill level ${lvl.toFixed(1)}</div><div class="level-dots">${dotsHTML}</div>`;
+    lr.onclick = () => goToLevel(lvlIdx);
+    body.appendChild(lr);
+
+    // Connector below (not after last item)
+    if (ri < reversedLevels.length - 1) {
+      const line2 = document.createElement('div');
+      line2.className = 'v-line' + (done ? ' lit' : '');
+      body.appendChild(line2);
+    }
+  });
+
+  const spacer = document.createElement('div');
+  spacer.style.height = '32px';
+  body.appendChild(spacer);
+}
+
+// ═══════════════════════════════════════
+// LEVEL PAGE
+// ═══════════════════════════════════════
+function renderLevelPage(lvlIdx) {
+  const lvl = LEVELS[lvlIdx];
+  const cur = currentLvlIdx();
+  const isAccessible = lvlIdx <= cur || levelDone(lvlIdx);
+  const { done, total } = levelProgress(lvlIdx);
+  const isDone = levelDone(lvlIdx);
+
+  // Counter
+  document.getElementById('lc-count').innerHTML = `${done} <span class="of">/ ${total}</span>`;
+  const sub = document.getElementById('lc-sub');
+  if (isDone) {
+    sub.innerHTML = `<strong>Level ${lvl.toFixed(1)} complete! 🎉</strong>`;
+  } else {
+    const left = total - done;
+    sub.innerHTML = `only <strong>${left} set${left !== 1 ? 's' : ''}</strong> left until level ${lvl.toFixed(1)} unlocks`;
+  }
+
+  const body = document.getElementById('lvl-body');
+  body.innerHTML = '';
+
+  // Chest — show the chest that unlocks AFTER this level (only for 1.0, 2.0, 3.0)
+  if (CHEST_AT[lvl]) {
+    const chest = CHEST_AT[lvl];
+    const chestUnlocked = isDone;
+    const cc = document.createElement('div');
+    cc.className = 'lvl-chest' + (chestUnlocked ? ' unlocked' : '');
+    cc.innerHTML = `
+      <div class="chest-icon-box">${CHEST_SVG}</div>
+      <div class="chest-info">
+        <div class="chest-eye">Level ${lvl.toFixed(1).replace('.0','').replace('.5','')} reward</div>
+        <div class="chest-name">${chestUnlocked ? 'Unlocked – ' + chest.reward : chest.reward}</div>
+        <div class="chest-hint">${chestUnlocked ? chest.hint : 'Locked – Complete all level ' + lvl.toFixed(1) + ' nodes to unlock'}</div>
+      </div>`;
+    body.appendChild(cc);
+  }
+
+  // Skill card
+  const sc = document.createElement('div');
+  sc.className = 'skill-card' + (isDone ? ' done' : (isAccessible ? ' active' : ''));
+  let html = `<div class="skill-card-title">Skill level ${lvl.toFixed(1)}</div>`;
+
+  SKILLS.forEach((sk, si) => {
+    const ex = EXERCISES[sk.id][lvlIdx];
+    const exDone = isExDone(lvlIdx, si);
+    const locked = !isAccessible;
+    const completedSegs = segsComplete(lvlIdx, si);
+    const inProgress = tapsInSeg(lvlIdx, si);
+
+    const segsHTML = [0,1,2].map(seg => {
+      const segDone = seg < completedSegs;
+      const segActive = seg === completedSegs && !exDone;
+      const pClass = segActive ? `p${inProgress}` : segDone ? 'p3' : 'p0';
+      let dotContent = '';
+      if (segDone) dotContent = checkColored(sk.color);
+      else if (segActive && inProgress > 0) dotContent = `<span class="seg-count" style="color:${sk.color}">${inProgress}/3</span>`;
+      return `<div class="seg${segDone ? ' complete' : ''}"><div class="seg-fill ${pClass}" style="background:${sk.color}"></div><div class="seg-dot">${dotContent}</div></div>`;
+    }).join('');
+
+    html += `
+      <div class="ex-row">
+        <div class="ex-name">${ex.label}</div>
+        <div class="ex-sub">${ex.sub}${ex.alt ? ` <span class="ex-alt">· ${ex.alt}</span>` : ''}</div>
+        <div class="sbar ${locked ? 'sbar-locked' : ''}" data-li="${lvlIdx}" data-si="${si}">${segsHTML}</div>
+      </div>`;
+  });
+
+  sc.innerHTML = html;
+
+  sc.querySelectorAll('.sbar:not(.sbar-locked)').forEach(bar => {
+    bar.addEventListener('click', () => {
+      const li = parseInt(bar.dataset.li);
+      const si = parseInt(bar.dataset.si);
+      const cur = getSess(li, si);
+      state[eKey(li, si)] = cur >= SESSIONS ? 0 : cur + 1;
+      save();
+      renderLevelPage(li);
+    });  });
+
+  body.appendChild(sc);
+
+  // Today's legs
+  const legs = getTodayLegs();
+  const legTitle = document.createElement('div');
+  legTitle.className = 'legs-title';
+  legTitle.style.padding = '4px 0 4px';
+  legTitle.textContent = "Today's leg exercises";
+  body.appendChild(legTitle);
+
+  const legRow = document.createElement('div');
+  legRow.className = 'legs-row';
+
+  [
+    { data: legs.sq, cls: 'sq', key: 'lsq' },
+    { data: legs.lu, cls: 'lu', key: 'llu' },
+  ].forEach(({ data, cls, key }) => {
+    const checked = !!state[key];
+    const card = document.createElement('div');
+    card.className = `leg-card ${cls}${checked ? ' checked' : ''}`;
+    card.innerHTML = `
+      <div class="leg-card-name">${data.label}</div>
+      <div class="leg-card-desc">${data.desc}</div>
+      <div class="leg-check">${CHECK_G}</div>`;
+    card.onclick = () => { state[key] = !state[key]; save(); renderLevelPage(lvlIdx); };
+    legRow.appendChild(card);
+  });
+
+  body.appendChild(legRow);
+
+  const spacer = document.createElement('div');
+  spacer.style.height = '20px';
+  body.appendChild(spacer);
+}
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+// Inject SVG icons
+document.getElementById('tree-big-icon').innerHTML = TREE_SVG;
+document.getElementById('tree-icon-btn').innerHTML = `<span style="display:inline-flex;width:28px;height:28px">${TREE_SVG}</span>`;
+// Open to the current level directly on first visit
+const startIdx = currentLvlIdx();
+activeLvlIdx = startIdx;
+goToLevel(startIdx);
+</script>
+</body>
+</html>
