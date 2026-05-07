@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My skill tree</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+:root {
+  --green:#76A900;--green-light:#EEF5D0;--green-mid:#BFDF6E;--green-dark:#4A6A00;--green-deep:#2E4200;
+  --amber:#F5A623;--amber-light:#FEF3DC;--brown:#6B2D1E;--grey-skill:#7A7A6E;
+  --purple:#C8C0E8;--purple-dark:#5C4D8A;--pink:#F0C8C8;--pink-dark:#A83050;
+  --bg:#F0EEE8;--surface:#FFFFFF;--surface-2:#EDEAE3;
+  --text-1:#1A1A18;--text-2:#6B6960;--text-3:#A8A59E;--border:rgba(0,0,0,0.09);
+  --r-sm:12px;--r-lg:22px;--r-xl:28px;--font:'DM Sans',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);font-family:var(--font);color:var(--text-1);min-height:100vh;overflow-x:hidden;}
+.page{display:none;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:48px;animation:fadeUp 0.22s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.tree-header{padding:56px 24px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;}
+.tree-back-btn{position:absolute;left:20px;top:52px;width:44px;height:44px;border-radius:50%;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,0.09);border:none;cursor:pointer;font-size:20px;font-family:var(--font);display:flex;align-items:center;justify-content:center;}
+.tree-back-btn:active{transform:scale(0.93);}
+.tree-big-icon{width:72px;height:72px;}
+.tree-big-icon svg{width:72px;height:72px;}
+.tree-title{font-size:22px;font-weight:700;}
+.tree-body{padding:0 16px;display:flex;flex-direction:column;}
+.v-line{width:3px;height:18px;background:var(--border);margin:0 auto;transition:background 0.4s;}
+.v-line.lit{background:var(--green-mid);}
+.chest-row{background:var(--surface);border-radius:var(--r-lg);padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:2px solid transparent;transition:border-color 0.4s;}
+.chest-row.unlocked{border-color:var(--amber);}
+.chest-icon-box{width:46px;height:46px;border-radius:var(--r-sm);background:var(--amber-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:6px;}
+.chest-icon-box svg{width:100%;height:100%;}
+.chest-info .chest-eye{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:2px;}
+.chest-row.unlocked .chest-eye{color:var(--amber);}
+.chest-info .chest-name{font-size:16px;font-weight:700;color:var(--text-1);}
+.chest-row.unlocked .chest-name{color:var(--amber);}
+.chest-info .chest-hint{font-size:12px;color:var(--text-2);margin-top:1px;}
+.level-row{background:var(--surface);border-radius:var(--r-lg);padding:15px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:pointer;border:2px solid transparent;transition:border-color 0.3s,background 0.3s;user-select:none;}
+.level-row:active{transform:scale(0.985);}
+.level-row.current{border-color:var(--green);}
+.level-row.done{border-color:var(--green);background:var(--green-light);}
+.level-row-title{font-size:16px;font-weight:700;color:var(--text-1);}
+.level-row.done .level-row-title{color:var(--green-deep);}
+.level-dots{display:flex;gap:8px;}
+.ldot{width:38px;height:38px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;transition:all 0.3s;border:2px solid transparent;}
+.ldot svg{width:16px;height:16px;}
+.lvl-header{padding:52px 20px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.back-btn{width:44px;height:44px;border-radius:50%;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,0.09);border:none;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.back-btn:active{transform:scale(0.93);}
+.lvl-header-mid{flex:1;text-align:center;padding-top:2px;}
+.lvl-journey-label{font-size:14px;font-weight:500;color:var(--text-2);margin-bottom:2px;}
+.lvl-big-count{font-size:68px;font-weight:800;line-height:1;letter-spacing:-2px;color:var(--text-1);}
+.lvl-big-count .of{color:var(--text-3);font-weight:600;font-size:56px;}
+.lvl-sub{font-size:14px;color:var(--text-2);margin-top:6px;line-height:1.45;}
+.lvl-sub strong{color:var(--green-dark);}
+.tree-icon-btn{width:52px;height:52px;border-radius:50%;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,0.09);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:12px;}
+.tree-icon-btn svg{width:100%;height:100%;}
+.tree-icon-btn:active{transform:scale(0.93);}
+.lvl-body{padding:0 16px;display:flex;flex-direction:column;gap:14px;}
+.lvl-chest{background:var(--surface);border-radius:var(--r-lg);padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:2px solid transparent;transition:border-color 0.4s;}
+.lvl-chest.unlocked{border-color:var(--amber);}
+.skill-card{background:var(--surface);border-radius:var(--r-lg);padding:18px 16px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:2px solid transparent;transition:all 0.3s;}
+.skill-card.active{border-color:var(--green);}
+.skill-card.done{border-color:var(--green);background:var(--green-light);}
+.skill-card-title{font-size:18px;font-weight:700;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.skill-card.done .skill-card-title{color:var(--green-deep);border-color:var(--green-mid);}
+.ex-row{margin-bottom:14px;}
+.ex-row:last-child{margin-bottom:0;}
+.ex-name{font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:2px;}
+.ex-sub{font-size:12px;color:var(--text-2);margin-bottom:6px;}
+.ex-alt{color:var(--text-3);}
+.sbar{height:54px;border-radius:99px;background:var(--surface-2);position:relative;cursor:pointer;overflow:visible;transition:transform 0.15s;user-select:none;display:flex;gap:4px;padding:4px;}
+.sbar:active{transform:scale(0.99);}
+.sbar.sbar-locked{cursor:not-allowed;opacity:0.38;pointer-events:none;}
+.seg{flex:1;border-radius:99px;background:var(--surface-2);position:relative;overflow:hidden;transition:all 0.25s;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(0,0,0,0.06);}
+.seg-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;transition:width 0.35s cubic-bezier(0.34,1.2,0.64,1);}
+.seg-fill.p0{width:0%}.seg-fill.p1{width:33.33%}.seg-fill.p2{width:66.66%}.seg-fill.p3{width:100%}
+.seg-dot{position:relative;z-index:2;width:34px;height:34px;border-radius:50%;background:white;box-shadow:0 1px 5px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.seg.complete .seg-dot{background:rgba(255,255,255,0.92);}
+.seg-dot svg{width:15px;height:15px;}
+.seg-count{font-size:12px;font-weight:700;line-height:1;}
+.seg.complete{border-color:transparent;}
+.legs-title{font-size:20px;font-weight:700;}
+.legs-row{display:flex;gap:12px;}
+.leg-card{flex:1;border-radius:var(--r-lg);padding:16px 14px;min-height:134px;position:relative;cursor:pointer;user-select:none;transition:transform 0.2s;}
+.leg-card:active{transform:scale(0.97);}
+.leg-card.sq{background:var(--purple);}
+.leg-card.lu{background:var(--pink);}
+.leg-card-name{font-size:14px;font-weight:700;line-height:1.3;margin-bottom:4px;}
+.leg-card-desc{font-size:12px;color:var(--text-2);line-height:1.4;}
+.leg-card-desc strong{font-weight:700;color:var(--text-1);}
+.leg-check{position:absolute;bottom:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.65);display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.leg-card.checked .leg-check{background:white;box-shadow:0 1px 5px rgba(0,0,0,0.14);}
+.leg-check svg{width:14px;height:14px;opacity:0.25;transition:opacity 0.2s;}
+.leg-card.checked .leg-check svg{opacity:1;}
+.leg-card.sq .leg-check svg{stroke:var(--purple-dark);}
+.leg-card.lu .leg-check svg{stroke:var(--pink-dark);}
+</style>
+</head>
+<body>
+<div class="page active" id="page-tree">
+  <div class="tree-header">
+    <button class="tree-back-btn" id="tree-back-btn" onclick="backFromTree()">‹</button>
+    <div class="tree-big-icon" id="tree-big-icon"></div>
+    <div class="tree-title">My skill tree</div>
+  </div>
+  <div class="tree-body" id="tree-body"></div>
+</div>
+<div class="page" id="page-level">
+  <div class="lvl-header">
+    <button class="back-btn" onclick="goToTree()">‹</button>
+    <div class="lvl-header-mid">
+      <div class="lvl-journey-label">My journey</div>
+      <div class="lvl-big-count" id="lc-count">0 <span class="of">/ 36</span></div>
+      <div class="lvl-sub" id="lc-sub"></div>
+    </div>
+    <button class="tree-icon-btn" onclick="goToTree()" id="tree-icon-btn"></button>
+  </div>
+  <div class="lvl-body" id="lvl-body"></div>
+</div>
+<script>
+const SESSIONS=9,TAPS_PER_SEG=3,SEGS=3;
+const LEVELS=[0.5,1.0,1.5,2.0,2.5,3.0];
+const SKILLS=[
+  {id:'lsit',    label:'L-sit',    color:'#76A900',colorLight:'#EEF5D0',colorDark:'#4A6A00'},
+  {id:'dips',    label:'Dips',     color:'#F5A623',colorLight:'#FEF3DC',colorDark:'#B37518'},
+  {id:'pushups', label:'Push-ups', color:'#6B2D1E',colorLight:'#F5E8E5',colorDark:'#3D1208'},
+  {id:'pullups', label:'Pull-ups', color:'#7A7A6E',colorLight:'#EDEAE3',colorDark:'#46463D'},
+];
+const EXERCISES={
+  lsit:[
+    {label:'Lying leg raises',sub:'3×10 reps'},
+    {label:'Seated leg raises',sub:'3×10, hands on floor',alt:'or: V-ups, 3×8'},
+    {label:'Tuck L-sit hold',sub:'3×5 sec, both knees up'},
+    {label:'Single-leg extension',sub:'3×5 sec each leg',alt:'or: Hollow body hold, 3×15 sec'},
+    {label:'L-sit hold',sub:'3×8 sec, legs straight'},
+    {label:'L-sit hold',sub:'3×12 sec, legs straight'},
+  ],
+  dips:[
+    {label:'Chair dips',sub:'3×8, bent knees'},
+    {label:'Chair dips',sub:'3×12, full depth',alt:'or: Bench dips, feet elevated'},
+    {label:'Negative dips',sub:'3×5, 4 sec descent'},
+    {label:'Assisted bar dips',sub:'3×6, band support'},
+    {label:'Bar dips',sub:'3×3, unassisted'},
+    {label:'Bar dips',sub:'3×6, unassisted',alt:'or: Ring push-ups, 3×8'},
+  ],
+  pushups:[
+    {label:'Wall push-ups',sub:'3×12 reps'},
+    {label:'Incline push-ups',sub:'3×10, hands elevated',alt:'or: Hands on dip bar, 3×10'},
+    {label:'Knee push-ups',sub:'3×8, full depth'},
+    {label:'Knee push-ups',sub:'3×12, slow 3 sec down'},
+    {label:'Full push-ups',sub:'3×4 reps',alt:'or: Wide-grip push-ups, 3×4'},
+    {label:'Full push-ups',sub:'3×7 reps'},
+  ],
+  pullups:[
+    {label:'Aus. pull-ups (dip bar)',sub:'3×6, bent legs'},
+    {label:'Aus. pull-ups (straight)',sub:'3×8, horizontal',alt:'or: Inverted row, 3×8'},
+    {label:'Dead hang',sub:'3×15 sec, full grip'},
+    {label:'Band-assisted pull-up',sub:'3×5, resistance band',alt:'or: Scapula pulls, 3×8'},
+    {label:'Negative pull-ups',sub:'3×4, 5 sec descent'},
+    {label:'Full pull-ups',sub:'3×1–2, unassisted'},
+  ],
+};
+const CHEST_AT={
+  1.0:{reward:'Pull-up bar',hint:'Essential for level 2 pull-up work'},
+  2.0:{reward:'Parallettes',hint:'Better L-sit & dip depth'},
+  3.0:{reward:'Running gear',hint:"Full kit — you've earned it"},
+};
+const SQUATS=[
+  {id:'sq1',label:'Bodyweight squats',desc:'<strong>3×12</strong> feet shoulder-width apart'},
+  {id:'sq2',label:'Squat hold',desc:'<strong>3×20 sec</strong> deep position'},
+  {id:'sq3',label:'Slow squats',desc:'<strong>3×10</strong> 3 sec down, 1 sec hold'},
+  {id:'sq4',label:'Pulse squats',desc:'<strong>3×15</strong> pulses at bottom'},
+];
+const LUNGES=[
+  {id:'lu1',label:'Stationary lunges',desc:'<strong>3×8</strong> each leg'},
+  {id:'lu2',label:'Walking lunges',desc:'<strong>3×10</strong> steps each side'},
+  {id:'lu3',label:'Reverse lunges',desc:'<strong>3×8</strong> each leg'},
+  {id:'lu4',label:'Lateral lunges',desc:'<strong>3×8</strong> each side'},
+];
+const state=(()=>{try{return JSON.parse(localStorage.getItem('cali_v13')||'{}');}catch(e){return{};}})();
+function save(){try{localStorage.setItem('cali_v13',JSON.stringify(state));}catch(e){}}
+function eKey(l,s){return`e_${l}_${s}`;}
+function getSess(l,s){return state[eKey(l,s)]||0;}
+function isExDone(l,s){return getSess(l,s)>=SESSIONS;}
+function segsComplete(l,s){return Math.floor(getSess(l,s)/TAPS_PER_SEG);}
+function tapsInSeg(l,s){return getSess(l,s)%TAPS_PER_SEG;}
+function levelDone(l){return SKILLS.every((_,s)=>isExDone(l,s));}
+function currentLvlIdx(){for(let i=0;i<LEVELS.length;i++){if(!levelDone(i))return i;}return LEVELS.length-1;}
+function levelProgress(l){let d=0;SKILLS.forEach((_,s)=>{d+=Math.min(getSess(l,s),SESSIONS);});return{done:d,total:SKILLS.length*SESSIONS};}
+function getTodayLegs(){
+  const today=new Date().toDateString();
+  if(state._leg_date!==today){
+    state._leg_date=today;
+    state._leg_sq=SQUATS[Math.floor(Math.random()*SQUATS.length)].id;
+    state._leg_lu=LUNGES[Math.floor(Math.random()*LUNGES.length)].id;
+    save();
+  }
+  return{sq:SQUATS.find(s=>s.id===state._leg_sq)||SQUATS[0],lu:LUNGES.find(l=>l.id===state._leg_lu)||LUNGES[0]};
+}
+const CHECK_W=`<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECK_G=`<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="#4A6A00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function checkColored(c){return`<svg viewBox="0 0 14 11" fill="none"><path d="M1.5 5.5L5 9L12.5 2" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+const TREE_SVG=`<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80.07 75.41">
+  <path d="M46.79,75.32c-1.18-5.26-2.08-10.63-2.12-16.04-.07-2.02,1.89-3.69,3.82-3.77,2.26-.28,4.71-.54,6.89.33,1.35.87,2.76,3.79,4.57,2.19.46-1.53-1.26-2.3-2.09-3.27,2.44.52,5.2,1.71,7.46,0-1.28-1.77-3.5-1.53-5.41-1.66.43-.58.6-1.89,1.59-1.37,4.03,1.14,8.84,1.02,12.07-1.97,3.14-2.48,4.01-6.82,3.15-10.58,3.95-3.83,4.27-10.35,1.69-15.02-1.57-2.92-4.42-4.85-7.47-5.98-.23-2.36-.9-4.75-2.58-6.5-3.21-3.63-8.43-4.64-13.03-3.71C51.98,2.91,45.97-.15,39.91,0c-5.93-.03-11.6,3.17-15.06,7.91-2.69-.56-5.55-.73-8.16.27-4.3,1.41-7.7,5.51-7.72,10.14-2.96,1.27-5.82,3.15-7.34,6.09-2.6,4.64-2.13,10.96,1.63,14.86-1.04,3.87.11,8.39,3.37,10.87,3.11,2.53,7.47,2.52,11.17,1.51.52.36,1.06.74,1.59,1.11-1.71.41-3.43.88-4.93,1.85,2.18,2.45,5.38,0,8.05-.05-.77,1.04-2.81,3.2-.57,3.93,2.33-.29,2.81-3.79,5.34-3.58,2.87-.05,6.46.19,8.28,2.75.99,5.95-.66,11.98-1.97,17.76M56.85,46.65c.86,1.31,1.79,2.56,2.81,3.75-3.67,1.55-7.69,2.11-11.64,2.07,2.9-2.01,5.81-3.99,8.83-5.82ZM55.29,42.75c-3.91,2.63-8.15,4.74-11.8,7.77.13-1.59.13-3.25.79-4.73.88-2.12,2.81-3.48,4.4-5.03,1.73,1.86,4.2,2.12,6.62,1.99ZM46.57,38.57c-1.07,1.09-2.19,2.13-3.39,3.09-.1-1.94-.13-3.89-.16-5.83,1.2.88,2.39,1.79,3.55,2.74ZM38.01,35.79c1.53,2.99.31,6.4.21,9.56-1.34-2.01-2.9-3.85-4.79-5.35,1.05-.37,2.31-.44,3.14-1.26.59-.93.97-1.97,1.44-2.96ZM31.04,42.1c1.89,2.77,3.82,5.52,5.49,8.43-2.97-.88-5.33-2.98-8.08-4.31-1.66-.99-3.89-1.47-4.68-3.45,2.44.14,5,.5,7.27-.67ZM22.95,46.95c2.75,2,5.76,3.61,8.66,5.38-3.88.19-7.8-.25-11.48-1.52.98-1.26,1.91-2.55,2.82-3.86Z" fill="#76a900"/>
+</svg>`;
+const CHEST_SVG=`<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78.99 84.65">
+  <path d="M38.03,84.65H11.17c-1.79,0-3.25-1.45-3.25-3.25v-37.89c0-1.79,1.46-3.25,3.25-3.25h26.85v44.38ZM38.03,38.27H2.24c-1.23,0-2.24-1-2.24-2.23v-10.47c0-1.23,1-2.23,2.24-2.23h35.79v14.94ZM39.47,20.57l-1.39-.24c-1.64-.28-16.13-2.85-20.63-6.28-4.94-3.78-5.6-9.25-1.47-12.19C17.7.64,19.96,0,22.55,0,26.06,0,29.68,1.22,32.45,3.34c3.31,2.51,5.8,9.01,7.03,12.74,1.23-3.74,3.76-10.21,7.08-12.72C49.34,1.26,52.96.06,56.48.07c2.58,0,4.85.66,6.54,1.89,4.13,2.97,3.44,8.43-1.52,12.19-4.51,3.41-19.01,5.91-20.65,6.19l-1.39.23ZM71.07,81.41c0,1.79-1.45,3.25-3.25,3.25h-26.85v-44.38h26.85c1.8,0,3.25,1.45,3.25,3.25v37.89ZM78.99,36.04c0,1.23-1,2.23-2.24,2.23h-35.79v-14.94h35.79c1.23,0,2.24,1,2.24,2.23v10.47ZM59.27,4.8c-.85-.61-2.03-.94-3.4-.94-2.13,0-4.44.78-6.19,2.11-2.23,1.68-4.28,6.88-5.35,10.12,4.38-.86,11.36-2.5,13.59-4.18,3.02-2.28,3.62-5.47,1.35-7.11ZM29.43,5.78c-1.81-1.39-4.21-2.21-6.41-2.22-1.41,0-2.63.33-3.52.96-2.36,1.68-1.75,4.99,1.36,7.37,2.3,1.74,9.53,3.48,14.06,4.39-1.08-3.38-3.19-8.76-5.49-10.51Z" fill="#fcb92a"/>
+</svg>`;
+let activeLvlIdx=null;
+function goToLevel(i){activeLvlIdx=i;renderLevelPage(i);document.getElementById('page-tree').classList.remove('active');document.getElementById('page-level').classList.add('active');window.scrollTo(0,0);}
+function goToTree(){renderTreePage();document.getElementById('page-level').classList.remove('active');document.getElementById('page-tree').classList.add('active');window.scrollTo(0,0);}
+function backFromTree(){goToLevel(activeLvlIdx!==null?activeLvlIdx:currentLvlIdx());}
+function renderTreePage(){
+  document.getElementById('tree-back-btn').style.display=activeLvlIdx!==null?'flex':'none';
+  const body=document.getElementById('tree-body');body.innerHTML='';
+  const rev=[...LEVELS].reverse();
+  rev.forEach((lvl,ri)=>{
+    const li=LEVELS.indexOf(lvl),done=levelDone(li),cur=currentLvlIdx(),isCur=li===cur&&!done;
+    if(CHEST_AT[lvl]){
+      const chest=CHEST_AT[lvl],prev=LEVELS.indexOf(lvl)-1,unlocked=prev>=0?levelDone(prev):false;
+      const cc=document.createElement('div');cc.className='chest-row'+(unlocked?' unlocked':'');
+      cc.innerHTML=`<div class="chest-icon-box">${CHEST_SVG}</div><div class="chest-info"><div class="chest-eye">Level ${lvl.toFixed(1).replace('.0','').replace('.5','')} reward</div><div class="chest-name">${unlocked?'Unlocked – '+chest.reward:chest.reward}</div><div class="chest-hint">${unlocked?chest.hint:'Locked – Complete all level '+(lvl-1)+' nodes to unlock'}</div></div>`;
+      body.appendChild(cc);
+      const ln=document.createElement('div');ln.className='v-line'+(unlocked?' lit':'');body.appendChild(ln);
+    }
+    const dotsHTML=SKILLS.map((sk,si)=>{const d=isExDone(li,si),any=getSess(li,si)>0;const style=d?`style="background:${sk.color};border-color:${sk.colorDark}"`:any?`style="border-color:${sk.color};background:${sk.colorLight}"`:'';return`<div class="ldot" ${style}>${d?CHECK_W:''}</div>`;}).join('');
+    const lr=document.createElement('div');lr.className='level-row'+(done?' done':'')+(isCur?' current':'');
+    lr.innerHTML=`<div class="level-row-title">Skill level ${lvl.toFixed(1)}</div><div class="level-dots">${dotsHTML}</div>`;
+    lr.onclick=()=>goToLevel(li);body.appendChild(lr);
+    if(ri<rev.length-1){const ln2=document.createElement('div');ln2.className='v-line'+(done?' lit':'');body.appendChild(ln2);}
+  });
+  const sp=document.createElement('div');sp.style.height='32px';body.appendChild(sp);
+}
+function renderLevelPage(lvlIdx){
+  const lvl=LEVELS[lvlIdx],cur=currentLvlIdx(),isAcc=lvlIdx<=cur||levelDone(lvlIdx);
+  const{done,total}=levelProgress(lvlIdx),isDone=levelDone(lvlIdx);
+  document.getElementById('lc-count').innerHTML=`${done} <span class="of">/ ${total}</span>`;
+  const sub=document.getElementById('lc-sub');
+  if(isDone){sub.innerHTML=`<strong>Level ${lvl.toFixed(1)} complete! 🎉</strong>`;}
+  else{const left=total-done;sub.innerHTML=`only <strong>${left} set${left!==1?'s':''}</strong> left until level ${lvl.toFixed(1)} unlocks`;}
+  const body=document.getElementById('lvl-body');body.innerHTML='';
+  if(CHEST_AT[lvl]){
+    const chest=CHEST_AT[lvl],unlocked=isDone,cc=document.createElement('div');
+    cc.className='lvl-chest'+(unlocked?' unlocked':'');
+    cc.innerHTML=`<div class="chest-icon-box">${CHEST_SVG}</div><div class="chest-info"><div class="chest-eye">Level ${lvl.toFixed(1).replace('.0','').replace('.5','')} reward</div><div class="chest-name">${unlocked?'Unlocked – '+chest.reward:chest.reward}</div><div class="chest-hint">${unlocked?chest.hint:'Locked – Complete all level '+lvl.toFixed(1)+' nodes to unlock'}</div></div>`;
+    body.appendChild(cc);
+  }
+  const sc=document.createElement('div');sc.className='skill-card'+(isDone?' done':isAcc?' active':'');
+  let html=`<div class="skill-card-title">Skill level ${lvl.toFixed(1)}</div>`;
+  SKILLS.forEach((sk,si)=>{
+    const ex=EXERCISES[sk.id][lvlIdx],exDone=isExDone(lvlIdx,si),locked=!isAcc;
+    const cs=segsComplete(lvlIdx,si),inp=tapsInSeg(lvlIdx,si);
+    const segsHTML=[0,1,2].map(seg=>{
+      const sd=seg<cs,sa=seg===cs&&!exDone,pc=sa?`p${inp}`:sd?'p3':'p0';
+      let dc='';if(sd)dc=checkColored(sk.color);else if(sa&&inp>0)dc=`<span class="seg-count" style="color:${sk.color}">${inp}/3</span>`;
+      return`<div class="seg${sd?' complete':''}"><div class="seg-fill ${pc}" style="background:${sk.color}"></div><div class="seg-dot">${dc}</div></div>`;
+    }).join('');
+    html+=`<div class="ex-row"><div class="ex-name">${ex.label}</div><div class="ex-sub">${ex.sub}${ex.alt?` <span class="ex-alt">· ${ex.alt}</span>`:''}</div><div class="sbar ${locked?'sbar-locked':''}" data-li="${lvlIdx}" data-si="${si}">${segsHTML}</div></div>`;
+  });
+  sc.innerHTML=html;
+  sc.querySelectorAll('.sbar:not(.sbar-locked)').forEach(bar=>{
+    bar.addEventListener('click',()=>{const li=parseInt(bar.dataset.li),si=parseInt(bar.dataset.si),c=getSess(li,si);state[eKey(li,si)]=c>=SESSIONS?0:c+1;save();renderLevelPage(li);});
+  });
+  body.appendChild(sc);
+  const legs=getTodayLegs(),legTitle=document.createElement('div');
+  legTitle.className='legs-title';legTitle.style.padding='4px 0 4px';legTitle.textContent="Today's leg exercises";body.appendChild(legTitle);
+  const legRow=document.createElement('div');legRow.className='legs-row';
+  [{data:legs.sq,cls:'sq',key:'lsq'},{data:legs.lu,cls:'lu',key:'llu'}].forEach(({data,cls,key})=>{
+    const checked=!!state[key],card=document.createElement('div');
+    card.className=`leg-card ${cls}${checked?' checked':''}`;
+    card.innerHTML=`<div class="leg-card-name">${data.label}</div><div class="leg-card-desc">${data.desc}</div><div class="leg-check">${CHECK_G}</div>`;
+    card.onclick=()=>{state[key]=!state[key];save();renderLevelPage(lvlIdx);};legRow.appendChild(card);
+  });
+  body.appendChild(legRow);
+  const sp=document.createElement('div');sp.style.height='20px';body.appendChild(sp);
+}
+document.getElementById('tree-big-icon').innerHTML=TREE_SVG;
+document.getElementById('tree-icon-btn').innerHTML=TREE_SVG;
+const startIdx=currentLvlIdx();activeLvlIdx=startIdx;goToLevel(startIdx);
+</script>
+</body>
+</html>
